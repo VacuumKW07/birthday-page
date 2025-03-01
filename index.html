@@ -233,18 +233,7 @@
 
             requestAnimationFrame(animate);
         }
-        animate();
-    </script>
-     <canvas id="fireworksCanvas"></canvas>
-
-    <script>
-        // 调整画布大小
-        const canvas = document.getElementById('fireworksCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        // 烟花粒子类
+                // 烟花粒子类
         class Particle {
             constructor(x, y, color) {
                 this.x = x;
@@ -308,8 +297,10 @@
             const y = Math.random() * canvas.height / 2;
             fireworks.push(createFirework(x, y));
         }, 1000);
-
         animate();
     </script>
+     <canvas id="fireworksCanvas"></canvas>
+
+
 </body>
 </html>
