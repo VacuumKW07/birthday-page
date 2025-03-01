@@ -1,116 +1,42 @@
-<script>
-    // 初始化检查
-    if(!window.requestAnimationFrame) {
-        alert("请使用现代浏览器访问（推荐Chrome/Firefox）");
-    }
-
-    const canvas = document.getElementById('fireworks');
-    if(!canvas) {
-        console.error("找不到Canvas元素");
-    }
-    const ctx = canvas.getContext('2d');
-    
-    // 增强的resize处理
-    function resizeCanvas() {
-        canvas.width = Math.max(window.innerWidth || 0, 300);
-        canvas.height = Math.max(window.innerHeight || 0, 300);
-        console.log('Canvas尺寸更新：', canvas.width, canvas.height);
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // 优化后的Firework类
-    class Firework {
-        constructor() {
-            this.reset();
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日快乐，晨晓！</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f0e8;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
         }
-
-        reset() {
-            this.x = Math.random() * canvas.width;
-            this.y = canvas.height;
-            this.targetY = Math.random() * canvas.height/2;
-            this.speed = 3 + Math.random() * 3;
-            this.radius = 2;
-            this.color = `hsl(${Math.random()*360}, 100%, 50%)`;
-            this.particles = [];
-            this.exploded = false;
+        .message {
+            font-size: 2em;
+            color: #d9534f;
         }
-
-        update() {
-            if(this.exploded) return true;
-            
-            this.y -= this.speed;
-            if(this.y <= this.targetY) {
-                this.explode();
-                return true;
-            }
-            return false;
+        .cake {
+            margin-top: 20px;
+            width: 200px;
+            height: 200px;
+            background: url('cake.gif') no-repeat center/cover;
         }
+    </style>
+</head>
+<body>
+    <div>
+        <div class="message">祝晨晓宝宝生日快乐！<br>爱你的包</div>
+        <div class="cake"></div>
+    </div>
+    <!-- 引入烟花效果的 JavaScript 库 -->
+    <script src="fireworks.js"></script>
+    <script>
+        // 初始化烟花效果
+        Fireworks.init();
+    </script>
+</body>
+</html>
 
-        explode() {
-            this.exploded = true;
-            for(let i = 0; i < 50; i++) {
-                this.particles.push({
-                    x: this.x,
-                    y: this.y,
-                    angle: Math.PI * 2 * Math.random(),
-                    speed: 2 + Math.random() * 4,
-                    radius: 1 + Math.random() * 2,
-                    alpha: 1,
-                    color: this.color
-                });
-            }
-        }
-
-        draw() {
-            if(this.exploded) return;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-        }
-    }
-
-    // 增强的动画循环
-    let fireworks = [];
-    function animate() {
-        if(!ctx) {
-            console.error("Canvas上下文获取失败");
-            return;
-        }
-
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        if(Math.random() < 0.03 && canvas.width > 100) {
-            fireworks.push(new Firework());
-        }
-
-        fireworks = fireworks.filter(firework => {
-            const shouldRemove = firework.update();
-            firework.draw();
-            return !shouldRemove;
-        });
-
-        fireworks.forEach(firework => {
-            firework.particles = firework.particles.filter(particle => {
-                const hsl = particle.color.match(/\d+/g) || [0, 100, 50];
-                particle.x += Math.cos(particle.angle) * particle.speed;
-                particle.y += Math.sin(particle.angle) * particle.speed + 1;
-                particle.alpha -= 0.02;
-
-                ctx.beginPath();
-                ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI*2);
-                ctx.fillStyle = `hsla(${hsl[0]}, ${hsl[1]}%, ${hsl[2]}%, ${particle.alpha})`;
-                ctx.fill();
-
-                return particle.alpha > 0;
-            });
-        });
-
-        requestAnimationFrame(animate);
-    }
-
-    // 启动动画（添加延迟确保元素加载）
-    setTimeout(animate, 500);
-</script>
